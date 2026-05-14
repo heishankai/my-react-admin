@@ -1,10 +1,16 @@
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { ProForm, ProFormText } from '@ant-design/pro-components';
-import type { FormInstance } from 'antd';
+import { history } from '@umijs/max';
+import { useRequest } from 'ahooks';
 import { Button, Divider, Typography } from 'antd';
+import Cookies from 'js-cookie';
 import { useRef } from 'react';
-
+// types
+import type { FormInstance } from 'antd';
 import type { LoginParamsType } from '../type';
+
+// services
+import { loginService } from '../service';
 
 const { Title } = Typography;
 
@@ -12,9 +18,19 @@ const LoginForm = () => {
   // 表单ref
   const formRef = useRef<FormInstance<LoginParamsType>>(null);
 
+  const { loading, run } = useRequest(loginService, {
+    manual: true,
+    onSuccess: ({ data }) => {
+      if (data?.access_token) {
+        Cookies.set('access_token', data.access_token);
+        history.push('/');
+      }
+    },
+  });
+
   // 登录
   const onFinish = async (values: LoginParamsType) => {
-    console.log(values);
+    await run(values);
   };
 
   return (
@@ -53,7 +69,13 @@ const LoginForm = () => {
           }}
         />
 
-        <Button block htmlType="submit" size="large" type="primary">
+        <Button
+          block
+          htmlType="submit"
+          loading={loading}
+          size="large"
+          type="primary"
+        >
           登录
         </Button>
       </ProForm>

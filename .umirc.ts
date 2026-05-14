@@ -8,7 +8,9 @@ const API_BASE_URL_PROD = 'https://zjiangyun.cn/api';
  * 生产环境仍走完整域名。
  */
 const API_BASE_URL =
-  process.env.NODE_ENV === 'production' ? API_BASE_URL_PROD : '';
+  process.env.NODE_ENV === 'production'
+    ? API_BASE_URL_PROD
+    : 'http://127.0.0.1:9501/';
 
 export default defineConfig({
   antd: {},
@@ -45,12 +47,8 @@ export default defineConfig({
    * - /api/*  与原先直连 8080 时的登录等接口路径保持一致
    */
   proxy: {
-    '/role': {
-      target: 'http://127.0.0.1:8080',
-      changeOrigin: true,
-    },
     '/api': {
-      target: 'http://127.0.0.1:8080',
+      target: 'http://127.0.0.1:9501',
       changeOrigin: true,
     },
   },
