@@ -3,7 +3,7 @@ import type { ProTableProps } from '@ant-design/pro-components';
 import React from 'react';
 
 type SearchConfig = ProTableProps<any, any>['search'];
-type RequestType = ProTableProps<any, any>['request'];
+type RequestType = (params: any, sort: any, filter: any) => Promise<any>;
 
 // 自定义protable默认配置
 const defaultProTableConfig: ProTableProps<any, any> = {
@@ -13,7 +13,7 @@ const defaultProTableConfig: ProTableProps<any, any> = {
   pagination: {
     showQuickJumper: true,
     showSizeChanger: true,
-    defaultPageSize: 10,
+    defaultPageSize: 20,
   },
   dateFormatter: 'string',
   defaultSize: 'small',
@@ -22,8 +22,9 @@ const defaultProTableConfig: ProTableProps<any, any> = {
   search: {
     span: 8,
     defaultColsNumber: 7,
-    labelWidth: 70,
-    collapsed: false,
+    // 超过5个自动触发展开收起
+    defaultFormItemsNumber: 5,
+    labelWidth: 82,
   },
 };
 
@@ -87,16 +88,24 @@ export const getProTableConfig = (options?: {
       ...search,
     },
     request: request
-      ? (parmas, sort, filter) => {
-          const { current, ...restParams } = parmas;
-          return request(
+      ? async (params, sort, filter) => {
+          const { current = 1, pageSize = 20, ...restParams } = params;
+          const response = (await request(
             {
-              pageIndex: current,
+              page: current,
+              per_page: pageSize,
               ...restParams,
             },
             sort,
             filter,
-          );
+          )) as any;
+          const pageData = response?.data;
+
+          return {
+            data: pageData?.list ?? [],
+            success: response?.code === undefined || response.code === 200,
+            total: pageData?.paginate?.total ?? 0,
+          };
         }
       : undefined,
   };

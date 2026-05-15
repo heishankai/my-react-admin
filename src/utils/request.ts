@@ -1,4 +1,4 @@
-import type { ApiResponse } from '@/types/api';
+import type { ApiResponse } from '@/types';
 import { history } from '@umijs/max';
 import { notification } from 'antd';
 import Axios from 'axios';

@@ -1,4 +1,4 @@
-import type { ApiResponse } from '@/types/api';
+import type { ApiResponse } from '@/types';
 import request from '@/utils/request';
 import type { LoginParamsType } from './type';
 
