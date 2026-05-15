@@ -1,8 +1,10 @@
 import type { ApiResponse } from '@/types';
-import { history } from '@umijs/max';
+import { backToLogin, retryWithNewToken } from '@/utils';
 import { notification } from 'antd';
+import type { AxiosError } from 'axios';
 import Axios from 'axios';
 import Cookies from 'js-cookie';
+import type { RetryRequestConfig } from './type';
 
 // 创建一个 Axios 实例
 const Request = Axios.create({
@@ -30,8 +32,23 @@ Request.interceptors.request.use(
 
 // 响应拦截器
 Request.interceptors.response.use(
-  (response): any => {
+  async (response): Promise<any> => {
     const data = response?.data as ApiResponse;
+    const originalRequest = response.config as RetryRequestConfig;
+
+    if (data?.code === 401) {
+      try {
+        const retryResponse = await retryWithNewToken(Request, originalRequest);
+        if (retryResponse) {
+          return retryResponse;
+        }
+      } catch {
+        backToLogin();
+      }
+
+      backToLogin();
+      return Promise.reject(data);
+    }
 
     if (typeof data?.code === 'number' && data.code !== 200) {
       notification.error({
@@ -44,12 +61,20 @@ Request.interceptors.response.use(
 
     return data;
   },
-  (error) => {
-    console.log(error, 'error');
+  async (error: AxiosError<ApiResponse>) => {
+    const originalRequest = error.config as RetryRequestConfig | undefined;
 
     if (error?.response?.status === 401) {
-      Cookies.remove('access_token');
-      history.push('/login');
+      try {
+        const retryResponse = await retryWithNewToken(Request, originalRequest);
+        if (retryResponse) {
+          return retryResponse;
+        }
+      } catch {
+        backToLogin();
+      }
+
+      backToLogin();
     }
 
     notification.error({

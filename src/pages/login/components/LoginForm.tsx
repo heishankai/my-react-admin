@@ -1,6 +1,6 @@
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { ProForm, ProFormText } from '@ant-design/pro-components';
-import { history } from '@umijs/max';
+import { history, useModel } from '@umijs/max';
 import { useRequest } from 'ahooks';
 import { Button, Divider, Typography } from 'antd';
 import Cookies from 'js-cookie';
@@ -10,19 +10,28 @@ import type { FormInstance } from 'antd';
 import type { LoginParamsType } from '../type';
 
 // services
-import { loginService } from '../service';
+import { getAuthInfoService, loginService } from '../service';
 
 const { Title } = Typography;
 
 const LoginForm = () => {
   // 表单ref
   const formRef = useRef<FormInstance<LoginParamsType>>(null);
+  const { setInitialState } = useModel('@@initialState');
 
   const { loading, run } = useRequest(loginService, {
     manual: true,
-    onSuccess: ({ data }) => {
+    onSuccess: async ({ data }) => {
       if (data?.access_token) {
         Cookies.set('access_token', data.access_token);
+        const authInfo = await getAuthInfoService();
+        await setInitialState((state) => ({
+          ...state,
+          currentUser: authInfo.data?.userInfo,
+          roles: authInfo.data?.roles ?? [],
+          menus: authInfo.data?.menus ?? [],
+          permissions: authInfo.data?.permissions ?? [],
+        }));
         history.push('/');
       }
     },
