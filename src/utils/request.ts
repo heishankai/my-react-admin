@@ -1,10 +1,7 @@
-import type { ApiResponse } from '@/types';
-import { backToLogin, retryWithNewToken } from '@/utils';
+import { backToLogin } from '@/utils';
 import { notification } from 'antd';
-import type { AxiosError } from 'axios';
 import Axios from 'axios';
 import Cookies from 'js-cookie';
-import type { RetryRequestConfig } from './type';
 
 // 创建一个 Axios 实例
 const Request = Axios.create({
@@ -30,57 +27,37 @@ Request.interceptors.request.use(
   },
 );
 
-// 响应拦截器
+// 添加响应拦截器
+/**
+ * @description :添加响应拦截器
+ * 2xx 范围内的状态码都会触发该函数。
+ * 对响应数据做点什么
+ * 停止loading
+ * 返回response.data
+ */
 Request.interceptors.response.use(
-  async (response): Promise<any> => {
-    const data = response?.data as ApiResponse;
-    const originalRequest = response.config as RetryRequestConfig;
+  function (response) {
+    return response.data;
+  },
+  function (error) {
+    /**
+     * 超出 2xx 范围的状态码都会触发该函数。
+     * 对响应错误做点什么
+     * 401 - 清除登录数据
+     * 返回error
+     */
+    console.log(error, 'error');
 
-    if (data?.code === 401) {
-      try {
-        const retryResponse = await retryWithNewToken(Request, originalRequest);
-        if (retryResponse) {
-          return retryResponse;
-        }
-      } catch {
+    if (error.response) {
+      const { code, data } = error?.response ?? {};
+      if (code === 401) {
         backToLogin();
       }
-
-      backToLogin();
-      return Promise.reject(data);
-    }
-
-    if (typeof data?.code === 'number' && data.code !== 200) {
       notification.error({
-        message: data.message || '请求失败，请联系技术支持',
+        message: data?.msg || '请求失败，请联系技术支持',
         duration: 3,
       });
-
-      return Promise.reject(data);
     }
-
-    return data;
-  },
-  async (error: AxiosError<ApiResponse>) => {
-    const originalRequest = error.config as RetryRequestConfig | undefined;
-
-    if (error?.response?.status === 401) {
-      try {
-        const retryResponse = await retryWithNewToken(Request, originalRequest);
-        if (retryResponse) {
-          return retryResponse;
-        }
-      } catch {
-        backToLogin();
-      }
-
-      backToLogin();
-    }
-
-    notification.error({
-      message: error?.response?.data?.message || '请求失败，请联系技术支持',
-      duration: 3,
-    });
 
     return Promise.reject(error);
   },

@@ -1,3 +1,5 @@
+import type { CurrentUserInfo } from '@/pages/login/type';
+
 export interface AppMenuItem {
   name: string;
   path: string;
@@ -7,6 +9,7 @@ export interface AppMenuItem {
 export type AppHeaderProps = {
   collapsed: boolean;
   onToggleCollapsed: () => void;
+  currentUser: CurrentUserInfo;
 };
 
 export type AppSiderProps = {

@@ -22,9 +22,24 @@ export const routes = [
         component: './policy-manage',
       },
       {
-        name: '菜单管理',
-        path: '/menu-manage',
-        component: './menu-manage',
+        name: '权限管理',
+        path: '/auth-manage',
+        routes: [
+          {
+            name: '角色管理',
+            path: '/auth-manage/role-manage',
+            component: './auth-manage/role-manage',
+          },
+          {
+            name: '菜单管理',
+            path: '/auth-manage/menu-manage',
+            component: './auth-manage/menu-manage',
+          },
+        ],
+      },
+      {
+        path: '*',
+        component: './404',
       },
     ],
   },

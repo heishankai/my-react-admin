@@ -6,7 +6,7 @@ import request from '@/utils/request';
  */
 export const getAuthEnumListService = async () => {
   return await request.get<ApiResponse<any[]>, ApiResponse<any[]>>(
-    '/api/admin/menu/types',
+    '/admin/menu/types',
   );
 };
 
@@ -15,7 +15,7 @@ export const getAuthEnumListService = async () => {
  */
 export const addMenuService = async (data: any) => {
   return await request.post<ApiResponse<void>, ApiResponse<void>>(
-    '/api/admin/menu/create',
+    '/admin/menu/create',
     data,
   );
 };
@@ -25,7 +25,7 @@ export const addMenuService = async (data: any) => {
  */
 export const updateMenuService = async (data: any) => {
   return await request.post<ApiResponse<void>, ApiResponse<void>>(
-    '/api/admin/menu/update',
+    '/admin/menu/update',
     data,
   );
 };
@@ -35,7 +35,7 @@ export const updateMenuService = async (data: any) => {
  */
 export const deleteMenuService = async (data: any) => {
   return await request.post<ApiResponse<void>, ApiResponse<void>>(
-    `/api/admin/menu/delete`,
+    `/admin/menu/delete`,
     data,
   );
 };
@@ -45,6 +45,6 @@ export const deleteMenuService = async (data: any) => {
  */
 export const getMenuListService = async () => {
   return await request.get<ApiResponse<any[]>, ApiResponse<any[]>>(
-    '/api/admin/menu/list',
+    '/admin/menu/list',
   );
 };

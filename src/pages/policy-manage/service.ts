@@ -11,5 +11,5 @@ export const getPolicyListService = async (params: PolicyListParamsType) => {
   return await request.get<
     ApiResponse<PolicyListDataType>,
     ApiResponse<PolicyListDataType>
-  >('/api/admin/orders/list', { params });
+  >('/admin/orders/list', { params });
 };

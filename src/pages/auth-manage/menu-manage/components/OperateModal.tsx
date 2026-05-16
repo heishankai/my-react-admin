@@ -16,7 +16,8 @@ import type { ModuleType } from '@/types';
 import type { ForwardRefRenderFunction } from 'react';
 
 // utils
-import { MODULE_TYPE_MAP, SUBMIT_SERVICE } from '../utils';
+import { MODULE_TYPE_MAP } from '@/constants';
+import { SUBMIT_SERVICE } from '../utils';
 
 const OperateModal: ForwardRefRenderFunction<{ actionRef: any }, any> = (
   { actionRef },
@@ -42,9 +43,7 @@ const OperateModal: ForwardRefRenderFunction<{ actionRef: any }, any> = (
     getAuthEnumListRun();
     setRecord(row);
 
-    if (type === 'edit') {
-      form.setFieldsValue({ ...row });
-    }
+    if (type === 'edit') form.setFieldsValue({ ...row });
   };
 
   // 表单提交

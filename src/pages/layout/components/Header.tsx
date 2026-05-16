@@ -1,5 +1,5 @@
 import { logoutService } from '@/pages/login/service';
-import { history, useModel } from '@umijs/max';
+import { history } from '@umijs/max';
 import { useRequest } from 'ahooks';
 import { Avatar, Button, Dropdown, Space } from 'antd';
 import Cookies from 'js-cookie';
@@ -28,23 +28,17 @@ const HeaderWrapper = styled.div`
   justify-content: space-between;
 `;
 
-const AppHeader = ({ collapsed, onToggleCollapsed }: AppHeaderProps) => {
-  const { initialState, setInitialState } = useModel('@@initialState');
-  const currentUser = initialState?.currentUser;
-
+const AppHeader = ({
+  collapsed,
+  currentUser,
+  onToggleCollapsed,
+}: AppHeaderProps) => {
   // 退出登录
   const { loading: logoutLoading, run: handleLogout } = useRequest(
     logoutService,
     {
       manual: true,
-      onFinally: async () => {
-        await setInitialState((state) => ({
-          ...state,
-          currentUser: undefined,
-          roles: [],
-          menus: [],
-          permissions: [],
-        }));
+      onFinally: () => {
         Cookies.remove('access_token');
         history.push('/login');
       },
@@ -85,12 +79,10 @@ const AppHeader = ({ collapsed, onToggleCollapsed }: AppHeaderProps) => {
           <Space>
             <Avatar
               size="small"
-              src={currentUser?.avatar || undefined}
+              src={currentUser?.avatar || ''}
               icon={<UserOutlined />}
             />
-            <span>
-              {currentUser?.nickname || currentUser?.username || '未登录'}
-            </span>
+            <span>{currentUser?.username || '未登录'}</span>
             <DownOutlined />
           </Space>
         </a>

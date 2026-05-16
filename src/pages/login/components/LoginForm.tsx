@@ -1,6 +1,6 @@
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { ProForm, ProFormText } from '@ant-design/pro-components';
-import { history, useModel } from '@umijs/max';
+import { history } from '@umijs/max';
 import { useRequest } from 'ahooks';
 import { Button, Divider, Typography } from 'antd';
 import Cookies from 'js-cookie';
@@ -10,34 +10,25 @@ import type { FormInstance } from 'antd';
 import type { LoginParamsType } from '../type';
 
 // services
-import { getAuthInfoService, loginService } from '../service';
+import { loginService } from '../service';
 
 const { Title } = Typography;
 
 const LoginForm = () => {
-  // 表单ref
   const formRef = useRef<FormInstance<LoginParamsType>>(null);
-  const { setInitialState } = useModel('@@initialState');
 
+  // 登录
   const { loading, run } = useRequest(loginService, {
     manual: true,
-    onSuccess: async ({ data }) => {
-      if (data?.access_token) {
-        Cookies.set('access_token', data.access_token);
-        const authInfo = await getAuthInfoService();
-        await setInitialState((state) => ({
-          ...state,
-          currentUser: authInfo.data?.userInfo,
-          roles: authInfo.data?.roles ?? [],
-          menus: authInfo.data?.menus ?? [],
-          permissions: authInfo.data?.permissions ?? [],
-        }));
-        history.push('/');
-      }
+    onSuccess: ({ data }) => {
+      if (!data?.access_token) return;
+      // 设置登录态
+      Cookies.set('access_token', data.access_token);
+      history.replace('/');
     },
   });
 
-  // 登录
+  // 登录表单提交
   const onFinish = async (values: LoginParamsType) => {
     await run(values);
   };

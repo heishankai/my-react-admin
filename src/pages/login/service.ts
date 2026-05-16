@@ -11,7 +11,7 @@ import type {
  */
 export const loginService = async (data: LoginParamsType) => {
   return await request.post<LoginResponseType, LoginResponseType>(
-    '/api/admin/auth/login',
+    '/admin/auth/login',
     data,
   );
 };
@@ -23,7 +23,7 @@ export const getAuthInfoService = async () => {
   return await request.get<
     ApiResponse<AuthInfoResponseData>,
     ApiResponse<AuthInfoResponseData>
-  >('/api/admin/auth/info');
+  >('/admin/auth/info');
 };
 
 /**
@@ -31,6 +31,6 @@ export const getAuthInfoService = async () => {
  */
 export const logoutService = async () => {
   return await request.get<ApiResponse<void>, ApiResponse<void>>(
-    '/api/admin/auth/logout',
+    '/admin/auth/logout',
   );
 };
