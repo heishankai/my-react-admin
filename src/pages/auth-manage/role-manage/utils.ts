@@ -1,7 +1,9 @@
+import { addRoleService, updateRoleService } from './service';
+
 /**
  * @description 接口类型枚举
  */
 export const SUBMIT_SERVICE: any = {
-  add: 1,
-  edit: 2,
+  add: addRoleService,
+  edit: updateRoleService,
 };

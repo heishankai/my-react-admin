@@ -2,7 +2,7 @@ import {
   CaretDownOutlined,
   CaretRightOutlined,
   DeleteOutlined,
-  EditOutlined,
+  FormOutlined,
   PlusCircleOutlined,
   PlusOutlined,
 } from '@ant-design/icons';
@@ -142,7 +142,7 @@ const MenuManage = () => {
                   </Button>
                   <Button
                     type="link"
-                    icon={<EditOutlined />}
+                    icon={<FormOutlined />}
                     style={{ padding: 0 }}
                     onClick={() => {
                       operateModalRef.current?.handleOpenModal('edit', record);
